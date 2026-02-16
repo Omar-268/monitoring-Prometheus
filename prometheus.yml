@@ -1,4 +1,4 @@
-global:
+ global:
   scrape_interval: 15s
 rule_files:
   - rules.yml
@@ -22,4 +22,4 @@ scrape_configs:
     static_configs:
       - targets: ['nginx-exporter:9113']
         labels:
-          alias: nginx_container         
+          alias: nginx_container       

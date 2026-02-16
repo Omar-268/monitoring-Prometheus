@@ -39,6 +39,29 @@ services:
       - grafana-data:/var/lib/grafana
       - ${PWD}/grafana/provisioning:/etc/grafana/provisioning
       - ${PWD}/grafana/dashboards:/var/lib/grafana/dashboards
+    
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - monitor    
+    restart: unless-stopped  
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    command:
+      - --nginx.scrape-uri=http://nginx/stub_status
+    ports:
+      - "9113:9113"
+    depends_on:
+      - nginx
+    networks:
+      - monitor
+    restart: unless-stopped  
 
   prometheus:
     image: prom/prometheus
@@ -70,4 +93,4 @@ networks:
 
 volumes:
   grafana-data:
-    name: grafana-data
+    name: grafana-data 
