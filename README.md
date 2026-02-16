@@ -22,3 +22,12 @@ I have implemented the following features to simulate a professional production 
 - **Node Exporter** → Host-level metrics
 - **NGINX** → Sample service to monitor
 - **NGINX Exporter** → Exposes NGINX metrics for Prometheus
+
+
+## Why This Matters? 
+
+- Eliminating Service "Blind Spots": Traditional host monitoring might show the server is "Healthy" (Low CPU/RAM), while the Web Server itself is actually crashed or unable to handle traffic. This setup ensures we see the actual state of the application, not just the hardware.
+
+- Proactive Traffic Management: By tracking Active Connections and Request Rates, we can detect "Traffic Spikes" before they overwhelm the system. This allows for informed decisions like scaling resources before a crash occurs.
+
+- Availability Assurance: The custom alerting rules ensure that if the Nginx service stops responding, the team is notified immediately, reducing downtime and ensuring a better user experience.
