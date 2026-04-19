@@ -1,0 +1,60 @@
+modules:
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: ip4
+
+  http_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4    
+      valid_http_versions:
+        - "HTTP/1.1"
+        - "HTTP/2.0"
+      valid_status_codes: []        
+      follow_redirects: true        
+      fail_if_not_ssl: false        
+
+
+  https_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      valid_http_versions:
+        - "HTTP/1.1"
+        - "HTTP/2.0"
+      valid_status_codes: []
+      follow_redirects: true
+      fail_if_not_ssl: true         
+      tls_config:
+        insecure_skip_verify: false     
+
+
+  ssh_banner:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+      query_response:
+        - expect: "^SSH-2.0-"
+
+  tcp_connect:                        
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+
+  ldaps_connect:                      
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4
+      tls: true
+      tls_config:
+        insecure_skip_verify: false
+      

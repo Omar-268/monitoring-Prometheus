@@ -101,7 +101,46 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - monitor
-      
+
+  apache:
+    image: httpd:alpine
+    container_name: apache
+    volumes:
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./apache/htdocs:/usr/local/apache2/htdocs:ro
+    ports:
+      - "8085:80"
+    networks:
+      - monitor
+    restart: unless-stopped
+
+  apache-exporter:
+    image: lusotycoon/apache-exporter:latest
+    container_name: apache-exporter
+    command:
+      - '--scrape_uri=http://apache/server-status?auto'
+    ports:
+      - "9117:9117"
+    depends_on:
+      - apache
+    networks:
+      - monitor
+    restart: unless-stopped 
+
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox-exporter
+    ports:
+      - "9115:9115"
+    volumes:
+      - ${PWD}/blackbox/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    command:
+      - '--config.file=/etc/blackbox/blackbox.yml'
+    networks:
+      - monitor
+    restart: unless-stopped
+
 networks:
   monitor:
     name: monitor

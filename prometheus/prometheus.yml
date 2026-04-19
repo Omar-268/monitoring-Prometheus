@@ -36,10 +36,135 @@ scrape_configs:
       - targets: ['nginx-exporter:9113']
         labels:
           instance: nginx_container   
-  
+
+  - job_name: 'apache'
+    static_configs:
+      - targets: ['apache-exporter:9117']
+
+
   - job_name: 'cadvisor'
     scrape_interval: 5s
     static_configs:
       - targets: ['cadvisor:8080']
         labels:
           instance: cadvisor_container
+
+  - job_name: 'blackbox_exporter'
+    static_configs:
+      - targets: ['blackbox-exporter:9115']
+
+  - job_name: 'icmp_ping'
+    metrics_path: /probe
+    params:
+      module: [icmp]
+    static_configs:
+      - targets:
+          - 192.168.1.1          
+          - 8.8.8.8  
+          - 192.168.106.135
+          - 192.168.106.130          
+        labels:
+          probe_type: 'icmp'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115 
+  
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]           
+    static_configs:
+      - targets:
+          - http://apache/site1/
+          - http://apache/site2/
+          - http://apache/site3/
+        labels:
+          site_group: "production"  
+    relabel_configs:
+      
+      - source_labels: [__address__]
+        target_label: __param_target
+      
+      - source_labels: [__param_target]
+        target_label: instance
+     
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+ 
+  - job_name: 'blackbox-https'
+    metrics_path: /probe
+    params:
+      module: [https_2xx]          
+    scrape_interval: 30s
+    static_configs:
+      - targets:
+          - https://google.com
+        labels:
+          site_group: "production"
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115 
+
+
+  - job_name: 'ssh_probe'
+    metrics_path: /probe
+    params:
+      module: [ssh_banner]
+    static_configs:
+      - targets:
+          - 192.168.106.130:22
+          - 192.168.106.11:22            
+        labels:
+          probe_type: 'ssh'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+  
+  
+  - job_name: 'freeipa_tcp'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+          - master.ipa.lab:88    
+          - master.ipa.lab:464   
+          - master.ipa.lab:389   
+          - master.ipa.lab:53    
+          - master.ipa.lab:443   
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+  
+  
+  - job_name: 'freeipa_ldaps'
+    metrics_path: /probe
+    params:
+      module: [ldaps_connect]
+    static_configs:
+      - targets:
+          - master.ipa.lab:636
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
