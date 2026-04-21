@@ -36,6 +36,8 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_DATA_SOURCE_PROMETHEUS_URL=http://prometheus:9090
       - GF_INSTALL_PLUGINS=grafana-opensearch-datasource
+      - OPENSEARCH_URL=${OPENSEARCH_URL}
+      - OPENSEARCH_USER=${OPENSEARCH_USER}
       - OPENSEARCH_PASSWORD=${OPENSEARCH_PASSWORD}
     volumes:
       - grafana-data:/var/lib/grafana

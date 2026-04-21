@@ -63,24 +63,66 @@ All dashboards are auto-provisioned on stack startup from `grafana/dashboards/`.
 ### Prerequisites
 - Docker & Docker Compose
 - Git
+- Wazuh server (optional)
+- FreeIPA server (optional)
 
 ### Clone the repository
 
 ```bash
-git clone https://github.com/your-username/monitor-containers.git
-cd monitor-containers
+git clone https://github.com/Omar-268/monitoring-prometheus.git
+cd monitoring-prometheus
 ```
 
-### Configure Alertmanager
+---
 
-Edit `alertmanager.yml` with your SMTP credentials:
+##  Before You Deploy — Full Configuration Checklist
+
+Everything a new user **must** fill in, update, or decide before running `docker compose up -d`.
+
+---
+
+### `.env` — Create & fill credentials
+
+A template is provided  copy it and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+---
+
+### `alertmanager.yml` — Fill SMTP credentials
+
+Replace the placeholder values with your real email details:
 
 ```yaml
+to: 'your_alert_recipient@gmail.com'
+from: 'your_sender@gmail.com'
 auth_username: 'your_sender@gmail.com'
 auth_password: "your_gmail_app_password"
-to: 'alert_recipient@gmail.com'
-from: 'your_sender@gmail.com'
 ```
+
+
+---
+
+###  `prometheus/prometheus.yml` — Update all IP addresses & hostnames
+
+The scrape targets are hardcoded to the original lab environment. Replace **every IP and hostname** with your own:
+
+| Section / Job | What to change |
+|---------------|----------------|
+| `node_exporter` targets | Replace `192.168.106.11`, `192.168.106.12` with your server IPs |
+| `icmp_ping` targets | Replace gateway IPs and hosts with IPs you want to ping |
+| `blackbox-http` targets | Replace `http://apache/site1/` etc. with your real internal HTTP URLs |
+| `ssh_probe` targets | Replace `192.168.106.130:22`, `192.168.106.11:22` with your SSH hosts |
+| `freeipa_tcp` targets | Replace `master.ipa.lab` with your FreeIPA server hostname or IP  |
+| `freeipa_ldaps` targets | Replace `master.ipa.lab:636` with your LDAPS host  |
+
+> Jobs that point to unreachable hosts will show as `DOWN` in Prometheus but won't break the stack.
+
+---
+
+
 
 ### Start the stack
 
@@ -120,7 +162,7 @@ docker compose up -d
 | `freeipa_tcp` | TCP | FreeIPA ports: 88, 389, 443, 464, 53 |
 | `freeipa_ldaps` | LDAPS | FreeIPA LDAP over SSL on port 636 |
 
-> **📝 Note:** The static target IPs in `prometheus/prometheus.yml` (Node Exporter hosts, ICMP targets, SSH hosts, FreeIPA endpoints, etc.) are set to the original lab environment. **You must update these IP addresses and hostnames to match your own infrastructure** before starting the stack, otherwise those scrape jobs will fail or produce no data.
+
 
 ---
 

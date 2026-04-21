@@ -15,9 +15,9 @@ datasources:
     uid: wazuh-opensearch
     type: grafana-opensearch-datasource
     access: proxy
-    url: https://192.168.106.130:9200
+    url: ${OPENSEARCH_URL}
     basicAuth: true
-    basicAuthUser: admin
+    basicAuthUser: ${OPENSEARCH_USER}
     isDefault: false
     secureJsonData:
       basicAuthPassword: ${OPENSEARCH_PASSWORD}
