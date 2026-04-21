@@ -54,6 +54,8 @@ A production-style monitoring stack built with **Prometheus**, **Grafana**, **Al
 
 All dashboards are auto-provisioned on stack startup from `grafana/dashboards/`.
 
+> **⚠️ Note:** The **Wazuh / OpenSearch** dashboard will not display any data unless you have a running Wazuh/OpenSearch instance and have configured its URL and credentials in the Grafana datasource. Without a Wazuh machine, this dashboard will show empty panels or connection errors.
+
 ---
 
 ##  Getting Started
@@ -62,29 +64,14 @@ All dashboards are auto-provisioned on stack startup from `grafana/dashboards/`.
 - Docker & Docker Compose
 - Git
 
-### 1. Clone the repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/your-username/monitor-containers.git
 cd monitor-containers
 ```
 
-### 2. Configure secrets
-
-
-make `.env` with your actual values:
-
-```env
-SMTP_AUTH_PASSWORD=your_gmail_app_password
-SMTP_TO=alert_recipient@gmail.com
-SMTP_FROM=your_sender@gmail.com
-OPENSEARCH_PASSWORD=your_opensearch_password
-```
-
-> **Note:** To generate a Gmail App Password, go to  
-> Google Account → Security → 2-Step Verification → App Passwords
-
-### 3. Configure Alertmanager
+### Configure Alertmanager
 
 Edit `alertmanager.yml` with your SMTP credentials:
 
@@ -95,13 +82,13 @@ to: 'alert_recipient@gmail.com'
 from: 'your_sender@gmail.com'
 ```
 
-### 4. Start the stack
+### Start the stack
 
 ```bash
 docker compose up -d
 ```
 
-### 5. Access the dashboards
+### Access the dashboards
 
 | Service | URL |
 |---------|-----|
@@ -132,6 +119,8 @@ docker compose up -d
 | `ssh_probe` | SSH | Remote servers on port 22 |
 | `freeipa_tcp` | TCP | FreeIPA ports: 88, 389, 443, 464, 53 |
 | `freeipa_ldaps` | LDAPS | FreeIPA LDAP over SSL on port 636 |
+
+> **📝 Note:** The static target IPs in `prometheus/prometheus.yml` (Node Exporter hosts, ICMP targets, SSH hosts, FreeIPA endpoints, etc.) are set to the original lab environment. **You must update these IP addresses and hostnames to match your own infrastructure** before starting the stack, otherwise those scrape jobs will fail or produce no data.
 
 ---
 

@@ -26,10 +26,6 @@ scrape_configs:
       - targets: ['192.168.106.12:9100']
         labels:
           instance: server-02
-      
-      - targets: ['18.207.127.183:9100']
-        labels:
-          instance: ec2_machine
              
   - job_name: 'nginx'
     static_configs:
